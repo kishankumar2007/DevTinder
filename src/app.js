@@ -19,9 +19,7 @@ app.get("/feed", async (req, res) => {
 
 app.delete("/user", async (req, res) => {
   try {
-    console.log(req.body.userId);
     const user = await User.findByIdAndDelete(req.body.userId);
-    console.log(user);
     if (user) {
       res.send("User has been deleted succesfully...");
     } else {
@@ -33,12 +31,20 @@ app.delete("/user", async (req, res) => {
   }
 });
 
-app.patch("/update", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
   try {
-    console.log(req.body);
+    const data = req.body;
+    const AllowedFields = ["firstName", "lastName", "age", "gender", "skills","password"];
+    const isUpdateAllowed = Object.keys(data).every((key) =>
+      AllowedFields.includes(key)
+    );
+    if (!isUpdateAllowed) throw new Error("Restricted fields can't be updated");
+    if (data?.skills?.length > 10)
+      throw new Error("Max 10 Skills can be added");
     const user = await User.findOneAndUpdate(
-      { email: req.body.email },
-      req.body
+      { _id: req.params.userId },
+      req.body,
+      { runValidators: true }
     );
     if (user) {
       res.send("User updated successfuly");
@@ -55,7 +61,6 @@ app.get("/userId", async (req, res) => {
   try {
     const user = await User.findById(req.body.userId);
     if (user) {
-      console.log(user);
       res.send(user);
     } else {
       throw new Error("No user found");
