@@ -5,6 +5,7 @@ const validateSignup = (req) => {
 
   if (!firstName || !lastName)
     throw new Error("Firstname and lastname is required");
+  
   if (!email) throw new Error("Email is required");
   else if (!validator.isEmail(email)) throw new Error("Email is not valid");
 
@@ -15,4 +16,13 @@ const validateSignup = (req) => {
     );
 };
 
-module.exports = { validateSignup };
+const validateEditData = (req) => {
+
+ const allowedEditFields = ["firstName","lastName","age","gender","avtar","skills","about"]
+
+ const isEditAllowed = Object.keys(req.body).every(field => allowedEditFields.includes(field))
+
+ return isEditAllowed
+}
+
+module.exports = { validateSignup, validateEditData};

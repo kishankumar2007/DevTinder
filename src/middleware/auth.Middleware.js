@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../Models/user");
+const User = require("../models/user");
 
 const userAuth = async (req, res, next) => {
   try {
@@ -13,12 +13,12 @@ const userAuth = async (req, res, next) => {
         return decoded?._id;
       }
     );
-    
+
     const user = await User.findById(_id);
-    req.user  = user;
+    req.user = user;
     next();
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({ message: error.message });
   }
 };
 

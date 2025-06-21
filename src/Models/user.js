@@ -38,16 +38,26 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: {
-        values: ["Male", "Female", "Other"],
-        message: "Expected Value should be Either Male,Female Or Other",
-      },
+      trim: true,
     },
     skills: {
       type: [String],
       trim: true,
     },
+    about: {
+      type: String,
+      minLength: 5,
+      maxLength: 100,
+      default: "this is a dummy about",
+      trim: true,
+    },
+
+    avtar: {
+      type: String,
+      default: "https://shorturl.at/p5yLy",
+    },
   },
+
   { timestamps: true }
 );
 
@@ -58,20 +68,17 @@ userSchema.methods.getJWT = function () {
   return token;
 };
 
-userSchema.methods.validatePassword = async function (password, res) {
+userSchema.methods.validatePassword = async function (userInputPassword) {
   const user = this;
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await bcrypt.compare(
+    userInputPassword,
+    user.password
+  );
 
   if (isPasswordValid) {
-    const token = user.getJWT();
-
-    res.cookie("token", token, {
-      expires: new Date(Date.now() + 24 * 3600000),
-    });
-
-    res.send("Login Success");
+    return isPasswordValid;
   } else {
-    throw new Error("Email or Password is invalid");
+    throw new Error("Invalid credentials, try again");
   }
 };
 
