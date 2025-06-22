@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const profileRouter = require("./routes/profileRouter");
 const requestRouter = require("./routes/requestRouter");
 const authRouter = require("./routes/authRouter");
+const userRouter = require("./routes/userRouter");
 
 require("dotenv").config();
 const app = express();
@@ -15,11 +16,12 @@ app.use(cookieParser());
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/",userRouter);
 
-connectDB()
-  .then(() =>
+connectDB().then((dbConnection) => {
+  if (dbConnection) {
     app.listen(PORT, () => {
       console.log(`Server is listing on PORT ${PORT}`);
-    })
-  )
-  .catch((err) => console.log(err.message));
+    });
+  }
+});

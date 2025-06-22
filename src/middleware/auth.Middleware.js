@@ -4,15 +4,9 @@ const User = require("../models/user");
 const userAuth = async (req, res, next) => {
   try {
     const { token } = req.cookies;
-    if (!token) throw new Error("Please signin again");
-    const _id = jwt.verify(
-      token,
-      process.env.JWT_SECKRET_KEY,
-      (err, decoded) => {
-        if (err) throw new Error("User not found");
-        return decoded?._id;
-      }
-    );
+    if (!token) throw new Error("Please signin first");
+    const decoded = jwt.verify(token, process.env.JWT_SECKRET_KEY);
+    const _id = decoded?._id;
 
     const user = await User.findById(_id);
     req.user = user;

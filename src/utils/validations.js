@@ -1,11 +1,13 @@
 const validator = require("validator");
+const connectionRequest = require("../models/connectionRequest");
+const User = require("../models/user");
 
 const validateSignup = (req) => {
-  const { firstName, lastName, email, password} = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
   if (!firstName || !lastName)
     throw new Error("Firstname and lastname is required");
-  
+
   if (!email) throw new Error("Email is required");
   else if (!validator.isEmail(email)) throw new Error("Email is not valid");
 
@@ -17,12 +19,49 @@ const validateSignup = (req) => {
 };
 
 const validateEditData = (req) => {
+  const allowedEditFields = [
+    "firstName",
+    "lastName",
+    "age",
+    "gender",
+    "avtar",
+    "skills",
+    "about",
+  ];
 
- const allowedEditFields = ["firstName","lastName","age","gender","avtar","skills","about"]
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
 
- const isEditAllowed = Object.keys(req.body).every(field => allowedEditFields.includes(field))
+  return isEditAllowed;
+};
 
- return isEditAllowed
-}
 
-module.exports = { validateSignup, validateEditData};
+const validateConnectionRequest = async (req) => {
+  const allowedConnectionRequest = ["intrested", "ignore"];
+  const status = req.params?.status;
+  const toUserId = req.params?.userId;
+  const fromUserId = req.user?._id
+
+  const isUserPresentInDb = await User.findById(toUserId );
+  const isConnectionRequestPresent = await connectionRequest.find({
+    $or: [
+      { toUserId, fromUserId },
+      { fromUserId: toUserId, toUserId: fromUserId },
+    ],
+  });
+
+  if (toUserId == fromUserId) throw new Error("Self Connection,Not allowed");
+
+  if (!allowedConnectionRequest.includes(status))
+    throw new Error(
+      "Connection Request either can be intrested or ignore, Got: " + status);
+
+  if(isConnectionRequestPresent.length > 0) throw new Error("Connection request already exits.")
+
+  if (!isUserPresentInDb) throw new Error("User not found");
+
+
+    return true
+};
+module.exports = { validateSignup, validateEditData, validateConnectionRequest };

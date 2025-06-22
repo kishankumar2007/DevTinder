@@ -16,19 +16,17 @@
 
 ## connectionRequestRouter
 
-- POST /request/send/intrested/:userId
-- POST /request/send/intrested/:userId
-- POST /request/review/accepted/:requestId
-- POST /request/review/rejected/:requestId
+- POST /request/send/:status/:userId ✅
+- POST /request/review/:status/:requestId ✅
 
 ---
 
 ## userRouter
 
+- GET - /user/request/received
 - GET - /user/connections
-- GET - /user/requets
 - GET - /user/feed <!-- Other users profile -->
 
 ---
 
-- Status: Ignore,intrested,Accepted,rejected
+- Status: ignore,intrested,accepted,rejected

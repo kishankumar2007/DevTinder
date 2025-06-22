@@ -38,7 +38,10 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      trim: true,
+      enum: {
+        values:["male","female","other"],
+        message:"${VALUE} is not incorrect"
+      }
     },
     skills: {
       type: [String],
@@ -82,6 +85,4 @@ userSchema.methods.validatePassword = async function (userInputPassword) {
   }
 };
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);
