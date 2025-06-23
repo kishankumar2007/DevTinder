@@ -44,6 +44,7 @@ const validateConnectionRequest = async (req) => {
   const fromUserId = req.user?._id
 
   const isUserPresentInDb = await User.findById(toUserId );
+
   const isConnectionRequestPresent = await connectionRequest.find({
     $or: [
       { toUserId, fromUserId },
@@ -51,15 +52,16 @@ const validateConnectionRequest = async (req) => {
     ],
   });
 
-  if (toUserId == fromUserId) throw new Error("Self Connection,Not allowed");
+  if (toUserId.toString() === fromUserId.toString()) throw new Error("Self Connection,Not allowed");
 
   if (!allowedConnectionRequest.includes(status))
     throw new Error(
       "Connection Request either can be intrested or ignore, Got: " + status);
 
+  if (!isUserPresentInDb) throw new Error("User not found");
+
   if(isConnectionRequestPresent.length > 0) throw new Error("Connection request already exits.")
 
-  if (!isUserPresentInDb) throw new Error("User not found");
 
 
     return true

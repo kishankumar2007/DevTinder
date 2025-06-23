@@ -23,9 +23,9 @@
 
 ## userRouter
 
-- GET - /user/request/received
-- GET - /user/connections
-- GET - /user/feed <!-- Other users profile -->
+- GET - /user/request/received ✅
+- GET - /user/connections ✅
+- GET - /user/feed  ✅<!-- Other users profile -->
 
 ---
 

@@ -2,7 +2,6 @@ const express = require("express");
 const { userAuth } = require("../middleware/auth.Middleware");
 const ConnectionRequest = require("../models/connectionRequest");
 const { validateConnectionRequest } = require("../utils/validations");
-const mongoose = require("mongoose");
 const requestRouter = express.Router();
 
 requestRouter.post(
