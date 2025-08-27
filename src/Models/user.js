@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    avtar: {
+    avatar: {
       type: String,
       default: "https://shorturl.at/p5yLy",
     },

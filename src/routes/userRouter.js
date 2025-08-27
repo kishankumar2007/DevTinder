@@ -14,22 +14,22 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
         }).populate("fromUserId", [
             "firstName",
             "lastName",
-            "avtar",
+            "avatar",
             "about",
             "skills",
             "gender",
             "age",
         ]);
 
-        if (connectionRequests.length === 0) return res.status(404).json({ message: "No Connection request found" });
-
-        res.status(200).json({ message: connectionRequests });
+        // if (connectionRequests.length === 0) return res.send([]);
+        res.send(connectionRequests);
+        console.log(connectionRequests)
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json(error.message);
     }
 });
 
-const POPULATED_DATA = ["firstName", "lastName", "age", "gender", "skills"]
+const POPULATED_DATA = ["firstName", "lastName", "age", "gender", "skills","avatar","about"]
 
 userRouter.get("/user/connections", userAuth, async (req, res) => {
     try {
@@ -48,7 +48,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
         })
         res.send(data)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        res.status(400).json(error.message)
     }
 })
 
@@ -79,9 +79,9 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
             ]
         }).select(POPULATED_DATA).skip(skip).limit(limit)
 
-        res.status(200).json({ data })
+        res.status(200).json(data)
     } catch (error) {
-        res.status(400).json({ message: error.message })
+        res.status(400).json(error.message)
     }
 })
 

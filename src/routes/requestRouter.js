@@ -23,7 +23,7 @@ requestRouter.post(
 
         const dbConnectionResponse = await userConnectionRequest.save();
         res.status(200).json({
-          message: `Request sent successfully`,
+          message: `${status} successfully`,
           data: dbConnectionResponse,
         });
       }
@@ -49,7 +49,7 @@ requestRouter.post(
       const connectionRequest = await ConnectionRequest.findOne({
         fromUserId: requestId,
         toUserId: loggedInUser._id,
-        status: "intrested",
+        status: "interested",
       });
 
       if (!connectionRequest)
@@ -60,7 +60,7 @@ requestRouter.post(
       connectionRequest.status = status;
       const updatedRequest = await connectionRequest.save();
 
-      res.json({ message: "Connected request "+ status, data: updatedRequest });
+      res.json({ message: "Connected request "+ status});
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

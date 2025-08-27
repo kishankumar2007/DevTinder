@@ -20,17 +20,19 @@ authRouter.post("/signup", async (req, res) => {
     });
 
     const response = await user.save();
-    res.json({ message: "Registered Successful", data: response });
+    res.json("Registered Successful", response);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.json({
+      status: 400,
+      message: error.message
+    });
   }
 });
 
 authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
-
+    const user = await User.findOne({ email: email })
     if (!user) throw new Error("Email or Password is invalid");
     const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
@@ -40,11 +42,23 @@ authRouter.post("/login", async (req, res) => {
         expires: new Date(Date.now() + 24 * 3600000),
       });
 
-      res.status(200).json({ message: "login successful"});
+      res.status(200).json({
+        user: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          age: user.age,
+          gender: user.gender,
+          skills: user.skills,
+          about: user.about,
+          avatar: user.avatar
+        }
+      });
     }
-    
+
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.log(error.message)
+    res.json({status: 400,message:error.message});
   }
 });
 
@@ -54,9 +68,9 @@ authRouter.post("/logout", userAuth, async (req, res) => {
       expires: new Date(Date.now()),
     });
 
-    res.json({ message: "Logout Successful" });
+    res.json("Logout Successful");
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json(error.message);
   }
 });
 

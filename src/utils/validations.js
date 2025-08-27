@@ -24,7 +24,7 @@ const validateEditData = (req) => {
     "lastName",
     "age",
     "gender",
-    "avtar",
+    "avatar",
     "skills",
     "about",
   ];
@@ -38,7 +38,7 @@ const validateEditData = (req) => {
 
 
 const validateConnectionRequest = async (req) => {
-  const allowedConnectionRequest = ["intrested", "ignore"];
+  const allowedConnectionRequest = ["interested", "ignore"];
   const status = req.params?.status;
   const toUserId = req.params?.userId;
   const fromUserId = req.user?._id
@@ -66,4 +66,5 @@ const validateConnectionRequest = async (req) => {
 
     return true
 };
+
 module.exports = { validateSignup, validateEditData, validateConnectionRequest };

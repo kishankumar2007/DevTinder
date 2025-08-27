@@ -9,27 +9,25 @@ const profileRouter = express.Router();
 profileRouter.get("/profile/view", userAuth, (req, res) => {
   try {
     const user = req.user;
-    res.json({ message: user });
+    res.json(user);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json(error.message);
   }
 });
 
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
+    console.log(req.body)
     const loggedInUser = req.user;
     const isEditAllowed = validateEditData(req);
 
     if (!isEditAllowed) throw new Error("Input Fields are invalid");
-
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
 
     await loggedInUser.save();
-    res.json({
-      message: "Profile updated successfully",
-    });
+    res.json("Profile updated successfully");
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json(error.message);
   }
 });
 
@@ -48,12 +46,11 @@ profileRouter.patch("/profile/updatepassword", userAuth, async (req, res) => {
     if (isPasswordValid) {
       const passwordHash = await bcrypt.hash(req.body.newPassword, 10);
       user.password = passwordHash;
-
-      await user.save();
+       await user.save();
     }
-    res.json({ message: "Password changed successfully" });
+    res.json("Password changed successfully");
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json(error.message );
   }
 });
 
