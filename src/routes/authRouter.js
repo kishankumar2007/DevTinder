@@ -3,7 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { validateSignup } = require("../utils/validations");
 const { userAuth } = require("../middleware/auth.Middleware");
-const { sendOtp,greetUser } = require("../utils/sendMail")
+const { sendOtp, greetUser } = require("../utils/sendMail")
 const Otp = require("../Models/OtpVerification")
 
 const authRouter = express.Router();
@@ -55,9 +55,13 @@ authRouter.post("/verify-otp", async (req, res) => {
     const { email, userOtp } = req.body
     const OTP = await Otp.findOne({ email, otp: userOtp })
 
-    if (!OTP) return res.status(401).json({ message: "Invalid Otp" })
+    if (!OTP) {
+      return res.status(401).json({ message: "Invalid Otp" })
+    }
 
-    if (OTP?.expiry < Date.now()) return res.status(400).json({ message: "Otp has been expired." })
+    if (OTP?.expiry < Date.now()) {
+      return res.status(400).json({ message: "Otp has been expired." })
+    }
 
     await Otp.findOneAndUpdate({ email, otp: userOtp }, { isVerified: true })
 
