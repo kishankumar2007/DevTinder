@@ -60,7 +60,7 @@ requestRouter.post(
       connectionRequest.status = status;
       const updatedRequest = await connectionRequest.save();
 
-      res.json({ message: "Connected request "+ status});
+      res.json({ message: "Connected request "+ status,data:updatedRequest});
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

@@ -3,7 +3,7 @@ const connectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
 const validateSignup = (req) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password} = req.body;
 
   if (!firstName || !lastName)
     throw new Error("Firstname and lastname is required");

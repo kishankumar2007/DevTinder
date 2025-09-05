@@ -3,6 +3,8 @@ const { userAuth } = require("../middleware/auth.Middleware");
 const { validateEditData } = require("../utils/validations");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const { upload } = require("../middleware/multer.Middleware");
+const { uploadOnCloudinary, deleleteFromCloudinary } = require("../utils/cloudnary");
 
 const profileRouter = express.Router();
 
@@ -15,17 +17,36 @@ profileRouter.get("/profile/view", userAuth, (req, res) => {
   }
 });
 
-profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
+profileRouter.patch("/profile/edit", userAuth, upload.fields([
+  {
+    name: "avatar",
+    maxCount: 1
+  }
+]), async (req, res) => {
   try {
-    console.log(req.body)
-    const loggedInUser = req.user;
+
+    let loggedInUser = req.user;
+
     const isEditAllowed = validateEditData(req);
 
     if (!isEditAllowed) throw new Error("Input Fields are invalid");
+
+    if (req.files.avatar) {
+      const localFilePath = req.files?.avatar[0]?.path
+
+      const res = await deleleteFromCloudinary(loggedInUser?.public_Id)
+      const response = await uploadOnCloudinary(localFilePath)
+      loggedInUser["avatar"] = response.url
+      loggedInUser['public_Id'] = response.fileId
+    }
+
+    loggedInUser["avatar"] = loggedInUser.avatar
+
     Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]));
 
     await loggedInUser.save();
-    res.json("Profile updated successfully");
+
+    res.json({ message: "Profile updated successfully", user: loggedInUser });
   } catch (error) {
     res.status(400).json(error.message);
   }
@@ -46,11 +67,11 @@ profileRouter.patch("/profile/updatepassword", userAuth, async (req, res) => {
     if (isPasswordValid) {
       const passwordHash = await bcrypt.hash(req.body.newPassword, 10);
       user.password = passwordHash;
-       await user.save();
+      await user.save();
     }
     res.json("Password changed successfully");
   } catch (error) {
-    res.status(400).json(error.message );
+    res.status(400).json(error.message);
   }
 });
 

@@ -23,7 +23,7 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
 
         // if (connectionRequests.length === 0) return res.send([]);
         res.send(connectionRequests);
-        console.log(connectionRequests)
+        
     } catch (error) {
         res.status(400).json(error.message);
     }
@@ -46,7 +46,7 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
             if (loggedInUser._id.toString() === row.fromUserId._id.toString()) return row.toUserId
             return row.fromUserId
         })
-        res.send(data)
+        res.json(data)
     } catch (error) {
         res.status(400).json(error.message)
     }

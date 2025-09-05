@@ -39,8 +39,8 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: {
-        values:["male","female","other"],
-        message:"${VALUE} is not incorrect"
+        values: ["male", "female", "other"],
+        message: "${VALUE} is not incorrect"
       }
     },
     skills: {
@@ -56,9 +56,16 @@ const userSchema = new mongoose.Schema(
     },
 
     avatar: {
-      type: String,
+      type: Object,
       default: "https://shorturl.at/p5yLy",
     },
+    public_Id: {
+      type: String
+    },
+    isVerified:{
+      type: Boolean,
+      default: false
+    }
   },
 
   { timestamps: true }
