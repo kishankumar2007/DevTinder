@@ -1,16 +1,16 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    port: 587,
-    secure: false,
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
         user: "paytmcashly@gmail.com",
         pass: "farqrdevuizjevug"
     }
-})
+});
 
-const greetUser = async (firstName, email ) => {
+const greetUser = async (firstName, email) => {
     try {
         const info = await transporter.sendMail({
             from: '"devTinder" <paytmcashly@gmail.com>',
