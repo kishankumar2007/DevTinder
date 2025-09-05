@@ -30,7 +30,7 @@ const greetUser = async (firstName, email ) => {
 
 const sendOtp = async (email) => {
     try {
-        const Otp = generateOtp()
+        const otp = generateOtp()
         const info = await transporter.sendMail({
             from: '"DevTinder" <paytmcashly@gmail.com>',
             to: email,
@@ -38,14 +38,14 @@ const sendOtp = async (email) => {
             html: `
                 <h2> Welcome to DevTinder 🚀</h2>
                 <p>Hi <b>User</b>,</p>
-                <p>Your one-time password (OTP) is: ${Otp}</p>
-                <h1 style="letter-spacing:5px;">${Otp}</h1>
+                <p>Your one-time password (OTP) is: ${otp}</p>
+                <h1 style="letter-spacing:5px;">${otp}</h1>
                 <p>This code will expire in <b>5 minutes</b>.</p>
                 <br/>
                 <p>- Team DevTinder</p>
     `
         })
-        return Otp
+        return otp
     } catch (error) {
         console.log(error.message)
     }
