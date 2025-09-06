@@ -89,8 +89,12 @@ authRouter.post("/login", async (req, res) => {
       const token = user.getJWT();
 
       res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none", 
         expires: new Date(Date.now() + 24 * 3600000),
       });
+
 
       res.status(200).json({
         status: 200,
