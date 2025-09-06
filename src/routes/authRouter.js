@@ -38,7 +38,7 @@ authRouter.post("/signup", async (req, res) => {
 });
 
 
-  //it's working in local server but it's failing due to backend hosted on free server.
+//it's working in local server but it's failing due to backend hosted on free server.
 
 authRouter.post("/send-otp", async (req, res) => {
   try {
@@ -54,7 +54,7 @@ authRouter.post("/send-otp", async (req, res) => {
 })
 
 
- authRouter.post("/verify-otp", async (req, res) => {
+authRouter.post("/verify-otp", async (req, res) => {
   try {
     const { email, userOtp } = req.body
     const OTP = await Otp.findOne({ email, otp: userOtp })
@@ -120,9 +120,11 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/logout", userAuth, async (req, res) => {
   try {
     res.cookie("token", null, {
-      expires: new Date(Date.now()),
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      expires: Date.now(),
     });
-
     res.json("Logout Successful");
   } catch (error) {
     res.status(400).json(error.message);
