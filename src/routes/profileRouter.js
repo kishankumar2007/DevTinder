@@ -33,9 +33,8 @@ profileRouter.patch("/profile/edit", userAuth, upload.fields([
 
     if (req.files.avatar) {
       const localFilePath = req.files?.avatar[0]?.path
-
-      const res = await deleleteFromCloudinary(loggedInUser?.public_Id)
       const response = await uploadOnCloudinary(localFilePath)
+      const res = await deleleteFromCloudinary(loggedInUser?.public_Id)
       loggedInUser["avatar"] = response.url
       loggedInUser['public_Id'] = response.fileId
     }
