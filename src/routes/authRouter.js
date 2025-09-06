@@ -3,7 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { validateSignup } = require("../utils/validations");
 const { userAuth } = require("../middleware/auth.Middleware");
-const { sendOtp, greetUser } = require("../utils/sendMail")
+// const { sendOtp, greetUser } = require("../utils/sendMail")
 const Otp = require("../models/OtpVerification")
 
 const authRouter = express.Router();
@@ -12,9 +12,9 @@ authRouter.post("/signup", async (req, res) => {
   try {
     validateSignup(req);
     const { firstName, lastName, email, password } = req.body;
-    const verifiedUser = await Otp.findOne({ email })
+    // const verifiedUser = await Otp.findOne({ email })
 
-    if (!verifiedUser || !verifiedUser.isVerified) throw Error("Verify your email.")
+    // if (!verifiedUser || !verifiedUser.isVerified) throw Error("Verify your email.")
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
@@ -26,8 +26,8 @@ authRouter.post("/signup", async (req, res) => {
     });
 
     const response = await user.save();
-    await greetUser(response.firstName, response.email)
-    await Otp.findByIdAndDelete(verifiedUser._id)
+    // await greetUser(response.firstName, response.email)
+    // await Otp.findByIdAndDelete(verifiedUser._id)
     res.json({ status: 200, message: "Registered Successful", data: response });
   } catch (error) {
     console.log(error.message)
@@ -36,6 +36,9 @@ authRouter.post("/signup", async (req, res) => {
     });
   }
 });
+
+/*
+  //it's working in local server but it's failing due to backend hosted on free server.
 
 authRouter.post("/send-otp", async (req, res) => {
   try {
@@ -49,8 +52,9 @@ authRouter.post("/send-otp", async (req, res) => {
     res.json({ status: 400, message: error.message })
   }
 })
+  */
 
-authRouter.post("/verify-otp", async (req, res) => {
+/* authRouter.post("/verify-otp", async (req, res) => {
   try {
     const { email, userOtp } = req.body
     const OTP = await Otp.findOne({ email, otp: userOtp })
@@ -71,6 +75,7 @@ authRouter.post("/verify-otp", async (req, res) => {
     res.json({ status: 400, message: error.message })
   }
 })
+  */
 
 authRouter.post("/login", async (req, res) => {
   try {
