@@ -123,7 +123,7 @@ authRouter.post("/logout", userAuth, async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      expires: Date.now(),
+      expires: new Date(Date.now()),
     });
     res.json("Logout Successful");
   } catch (error) {
