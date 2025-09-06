@@ -3,7 +3,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { validateSignup } = require("../utils/validations");
 const { userAuth } = require("../middleware/auth.Middleware");
-// const { sendOtp, greetUser } = require("../utils/sendMail")
+const { sendOtp, greetUser } = require("../utils/sendMail")
 const Otp = require("../models/OtpVerification")
 
 const authRouter = express.Router();
