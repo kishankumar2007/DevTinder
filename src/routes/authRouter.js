@@ -12,9 +12,9 @@ authRouter.post("/signup", async (req, res) => {
   try {
     validateSignup(req);
     const { firstName, lastName, email, password } = req.body;
-    const verifiedUser = await Otp.findOne({ email })
+    // const verifiedUser = await Otp.findOne({ email })
 
-    if (!verifiedUser || !verifiedUser.isVerified) throw Error("Verify your email.")
+    // if (!verifiedUser || !verifiedUser.isVerified) throw Error("Verify your email.")
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
@@ -26,8 +26,8 @@ authRouter.post("/signup", async (req, res) => {
     });
 
     const response = await user.save();
-    await greetUser(response.firstName, response.email)
-    await Otp.findByIdAndDelete(verifiedUser._id)
+    // await greetUser(response.firstName, response.email)
+    // await Otp.findByIdAndDelete(verifiedUser._id)
     res.json({ status: 200, message: "Registered Successful", data: response });
   } catch (error) {
     console.log(error.message)
