@@ -42,9 +42,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     }
 })
 
-import express from "express";
-import { validateWebhookSignature } from "razorpay/dist/utils/razorpay-utils";
-
 paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     try {
         console.log("webhook called");
