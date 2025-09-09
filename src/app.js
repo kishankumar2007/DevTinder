@@ -5,7 +5,8 @@ const profileRouter = require("./routes/profileRouter");
 const requestRouter = require("./routes/requestRouter");
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
-const cors = require("cors")
+const cors = require("cors");
+const paymentRouter = require("./routes/payment");
 require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -21,6 +22,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/",userRouter);
+app.use("/", paymentRouter)
 
 connectDB().then((dbConnection) => {
   if (dbConnection) {

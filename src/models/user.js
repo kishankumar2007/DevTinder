@@ -62,9 +62,13 @@ const userSchema = new mongoose.Schema(
     public_Id: {
       type: String
     },
-    isVerified:{
+    isPremium: {
       type: Boolean,
       default: false
+    },
+    membershipType: {
+      type: String,
+      default: "free"
     }
   },
 
