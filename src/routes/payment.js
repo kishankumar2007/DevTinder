@@ -11,7 +11,7 @@ const user = require("../models/user");
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     try {
 
-        const {firstName,lastName,email, _id} = req.user
+        const { firstName, lastName, email, _id } = req.user
         const { memberShipType } = req.body
         const order = await instance.orders.create({
             amount: memberShip[memberShipType] * 100,
@@ -50,23 +50,16 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
         if (!isWebhookValid) return res.status(400).json("WebhookSignature is not valid.")
         const paymentDetails = req.body.payload.payment.entity
 
-        if (req.body.event === 'payment.captured') {
-            let Payment = await payment.findOne({ orderId: paymentDetails.order_id })
-            Payment.status = paymentDetails.status
-            await Payment.save()
+        let Payment = await payment.findOne({ orderId: paymentDetails.order_id })
+        Payment.status = paymentDetails.status
+        await Payment.save()
 
-            let user = await User.findById({ _id: Payment.userId })
+        let user = await User.findById({ _id: Payment.userId })
 
-            user.isPremium = true
-            user.membershipType = Payment.memberShipType
+        user.isPremium = true
+        user.membershipType = Payment.memberShipType
 
-            await user.save()
-        }
-        if (req.body.event === 'payment.failed') {
-            let Payment = await payment.findOne({ orderId: paymentDetails.order_id })
-            Payment.status = paymentDetails.status
-            await user.save()
-        }
+        await user.save()
         return res.status(200).json({ message: "webhook received successfully." })
     } catch (error) {
         console.log(error.message)
