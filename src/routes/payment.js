@@ -6,7 +6,7 @@ const instance = require("../utils/razorpay");
 const User = require("../models/user")
 const payment = require("../models/paymentSchema");
 const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils");
-const user = require("../models/user");
+const User = require("../models/user");
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     try {
@@ -52,7 +52,7 @@ paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), as
         const webHookSignature = req.get("x-razorpay-signature");
 
         const isWebhookValid = validateWebhookSignature(
-            req.body.toString(), 
+            req.body.toString(),
             webHookSignature,
             process.env.WEBHOOK_SECRET
         );
