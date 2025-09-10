@@ -44,9 +44,9 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
 paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     try {
-        const body = await req.text()
-        const webHookSignature = req.headers.get("x-razorpay-signature");
         console.log("webhook called");
+        const body = req.body.toString();
+        const webHookSignature = req.get("x-razorpay-signature");
         const expectedSignature = crypto.createHmac("sha256", process.env.WEBHOOK_SECRET)
             .update(body)
             .digest("hex")
@@ -57,11 +57,11 @@ paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), as
         }
 
         const event = JSON.parse(body)
-        console.log("paymentDetails:", paymentDetails)
+        console.log("paymentDetails:", event.payload.payment.entity)
 
         if (event.event === "payment.captured") {
             const paymentInfo = event.payload.payment.entity
-            let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status });
+            let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status },{new: true});
 
             if (!Payment) return res.status(404).json({ message: "Payment record not found." });
 
@@ -84,7 +84,7 @@ paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), as
 
 
 paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
-    const user = req.user.json()
+    const user = req.user
     if (user.isPremium) {
         return res.status(200).json({ isPremium: true })
     } else {
