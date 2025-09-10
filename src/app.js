@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3500;
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://devtinder-dev.vercel.app',
   credentials: true
 }))
 app.use(express.json());
