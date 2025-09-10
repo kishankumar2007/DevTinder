@@ -5,7 +5,7 @@ const memberShip = require("../utils/membership")
 const instance = require("../utils/razorpay");
 const User = require("../models/user")
 const payment = require("../models/paymentSchema");
-const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils");
+const crypto = require("crypto")
 
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
@@ -44,34 +44,35 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
 paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     try {
+        const body = await req.text()
+        const webHookSignature = req.headers.get("x-razorpay-signature");
         console.log("webhook called");
+        const expectedSignature = crypto.createHmac("sha256", process.env.WEBHOOK_SECRET)
+            .update(body)
+            .digest("hex")
 
-        const webHookSignature = req.get("x-razorpay-signature");
 
-        const isWebhookValid = validateWebhookSignature(
-            req.body.toString(),
-            webHookSignature,
-            process.env.WEBHOOK_SECRET
-        );
-
-        if (!isWebhookValid) {
+        if (expectedSignature !== webHookSignature) {
             return res.status(400).send("Webhook signature is not valid.");
         }
 
-        const paymentDetails = JSON.parse(req.body).payload.payment.entity;
+        const event = JSON.parse(body)
+        console.log("paymentDetails:", paymentDetails)
 
-        let Payment = await payment.findOne({ orderId: paymentDetails.order_id });
-        if (!Payment) return res.status(404).json({ message: "Payment record not found." });
+        if (event.event === "payment.captured") {
+            const paymentInfo = event.payload.payment.entity
+            let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status });
 
-        Payment.status = paymentDetails.status;
-        await Payment.save();
+            if (!Payment) return res.status(404).json({ message: "Payment record not found." });
 
-        let user = await User.findById(Payment.userId);
-        if (!user) return res.status(404).json({ message: "User not found." });
 
-        user.isPremium = true;
-        user.membershipType = Payment.memberShipType;
-        await user.save();
+            let user = await User.findById(Payment.userId);
+            if (!user) return res.status(404).json({ message: "User not found." });
+
+            user.isPremium = true;
+            user.membershipType = Payment.memberShipType;
+            await user.save();
+        }
 
         return res.status(200).json({ message: "Webhook received successfully." });
     } catch (error) {
