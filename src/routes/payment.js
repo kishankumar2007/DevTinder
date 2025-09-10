@@ -59,21 +59,18 @@ paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), as
         const event = JSON.parse(body)
         console.log("paymentDetails:", event.payload.payment.entity)
 
-        if (event.event === "payment.captured") {
-            const paymentInfo = event.payload.payment.entity
-            let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status },{new: true});
+        const paymentInfo = event.payload.payment.entity
+        let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status }, { new: true });
 
-            if (!Payment) return res.status(404).json({ message: "Payment record not found." });
+        if (!Payment) return res.status(404).json({ message: "Payment record not found." });
 
 
-            let user = await User.findById(Payment.userId);
-            if (!user) return res.status(404).json({ message: "User not found." });
+        let user = await User.findById(Payment.userId);
+        if (!user) return res.status(404).json({ message: "User not found." });
 
-            user.isPremium = true;
-            user.membershipType = Payment.memberShipType;
-            await user.save();
-        }
-
+        user.isPremium = true;
+        user.membershipType = Payment.memberShipType;
+        await user.save();
         return res.status(200).json({ message: "Webhook received successfully." });
     } catch (error) {
         console.log("Webhook error:", error.message);
