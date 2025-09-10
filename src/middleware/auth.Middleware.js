@@ -9,6 +9,12 @@ const userAuth = async (req, res, next) => {
     const _id = decoded?._id;
 
     const user = await User.findById(_id);
+    
+    if (user.isPremium && user.membershipExpiry < new Date()) {
+      user.isPremium = false;
+      user.membershipType = "free";
+      await user.save();
+    }
     req.user = user;
     next();
   } catch (error) {

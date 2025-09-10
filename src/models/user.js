@@ -69,6 +69,10 @@ const userSchema = new mongoose.Schema(
     membershipType: {
       type: String,
       default: "free"
+    },
+    membershipExpiry: {
+      type: String,
+      required: true
     }
   },
 

@@ -6,8 +6,8 @@ const paymentSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    fullName:{
-        type:String,
+    fullName: {
+        type: String,
     },
     orderId: {
         type: String,
@@ -24,10 +24,14 @@ const paymentSchema = new mongoose.Schema({
     email: {
         type: String,
     },
-    memberShipType:{
+    memberShipType: {
         type: String
     },
     status: {
+        type: String,
+        required: true
+    },
+    expiry: {
         type: String,
         required: true
     }
