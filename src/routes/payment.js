@@ -5,7 +5,8 @@ const memberShip = require("../utils/membership")
 const instance = require("../utils/razorpay");
 const User = require("../models/user")
 const payment = require("../models/paymentSchema");
-const crypto = require("crypto")
+const crypto = require("crypto");
+const { validateWebhookSignature } = require("razorpay/dist/utils/razorpay-utils");
 
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
@@ -42,30 +43,18 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     }
 })
 
-paymentRouter.post("/api/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+paymentRouter.post("/api/webhook", async (req, res) => {
     try {
         console.log("webhook called");
-        const body = req.body.toString();
-        const webHookSignature = req.get("x-razorpay-signature");
-        const expectedSignature = crypto.createHmac("sha256", process.env.WEBHOOK_SECRET)
-            .update(body)
-            .digest("hex")
+        const signature = req.get('x-razorpay-signature')
+        const isSignatureValid = validateWebhookSignature(JSON.stringify(req.body), signature, process.env.WEBHOOK_SECRET)
+        if (!isSignatureValid) return res.status(400).json({ message: "signature is not valid." })
+        const paymentDetails = req.body.payload.payment.entity
+        const Payment = payment.findOne({ orderId: paymentDetails.order_id })
+        Payment.status = paymentDetails.status
+        await Payment.save()
 
-
-        if (expectedSignature !== webHookSignature) {
-            return res.status(400).send("Webhook signature is not valid.");
-        }
-
-        const event = JSON.parse(body)
-        console.log("paymentDetails:", event.payload.payment.entity)
-
-        const paymentInfo = event.payload.payment.entity
-        let Payment = await payment.findOneAndUpdate({ orderId: paymentInfo.order_id }, { status: paymentInfo.status }, { new: true });
-
-        if (!Payment) return res.status(404).json({ message: "Payment record not found." });
-
-
-        let user = await User.findById(Payment.userId);
+        let user = await User.findById({ _id: Payment.userId });
         if (!user) return res.status(404).json({ message: "User not found." });
 
         user.isPremium = true;
