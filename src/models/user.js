@@ -72,7 +72,6 @@ const userSchema = new mongoose.Schema(
     },
     membershipExpiry: {
       type: String,
-      required: true
     }
   },
 
